@@ -77,6 +77,7 @@
 
 <script>
     import Loader from "../components/Loader";
+    import {mapState, mapActions} from "vuex";
     export default {
         components: {
             Loader
@@ -87,31 +88,33 @@
             }
         },
         computed: {
-            theMovie(){
-                return this.$store.state.movie.theMovie;
-            },
-            loading() {
-                return this.$store.state.movie.loading;
-            }
+            ...mapState('movie', [
+                'theMovie',
+                'loading'
+            ])
         },
         created() {
-            this.$store.dispatch('movie/searchMovieWithId', {
+            // this.$store.dispatch('movie/searchMovieWithId', {
+            this.searchMovieWithId({
                 id: this.$route.params.id
             })
         },
         methods: {
+            ...mapActions('movie', [
+                'searchMovieWithId'
+            ]),
             requestDiffSizeImage(url, size = 700) {
                 // 잘못된 URL(Poster)인 경우.
-                // if (!url || url === 'N/A') {
+                if (!url || url === 'N/A') {
                     this.imageLoading = false
-                //     return ''
-                // }
+                    return ''
+                }
                 const src = url.replace('SX300', `SX${size}`)
                 // 정상적인 URL인 경우.
-                // this.$loadImage(src)
-                //     .then(() => {
-                //         this.imageLoading = false
-                //     })
+                this.$loadImage(src)
+                    .then(() => {
+                        this.imageLoading = false
+                    })
                 return src
             }
         }
